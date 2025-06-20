@@ -1,0 +1,11 @@
+{
+  "material-icon-theme.files.associations": {
+    "*.routes.ts": "routing",
+    "*.controller.ts": "controller",
+    "*.middleware.ts": "tools",
+    "*.service.ts": "node",
+    "server.ts": "server",
+    "app.ts": "server"
+  },
+  "material-icon-theme.presets.angular": false
+}

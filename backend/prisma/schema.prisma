@@ -1,0 +1,148 @@
+generator client {
+  provider = "prisma-client-js"
+  output   = "../src/generated/prisma"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id        String    @id @default(uuid()) @db.Uuid
+  username  String    @unique
+  password  String
+  role      String
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+  Employee  Employee?
+}
+
+model Customer {
+  id         String    @id @default(uuid()) @db.Uuid
+  name       String
+  email      String    @unique
+  phone      String?
+  address    String?
+  createdAt  DateTime  @default(now()) @map("created_at")
+  updatedAt  DateTime  @default(now()) @map("updated_at")
+  Sales      Sale[]
+}
+
+model OrderStatus {
+  id              String           @id @default(uuid()) @db.Uuid
+  name            String           @unique
+  PurchaseOrders  PurchaseOrder[]
+  Sales           Sale[]
+}
+
+model Employee {
+  id         String    @id @default(uuid()) @db.Uuid
+  userId     String    @unique @map("user_id") @db.Uuid
+  firstName  String    @map("first_name")
+  lastName   String    @map("last_name")
+  email      String    @unique
+  phone      String?
+  createdAt  DateTime  @default(now()) @map("created_at")
+  updatedAt  DateTime  @default(now()) @map("updated_at")
+  user       User      @relation(fields: [userId], references: [id])
+  Sales      Sale[]
+}
+
+model Supplier {
+  id             String          @id @default(uuid()) @db.Uuid
+  name           String
+  contactName    String?         @map("contact_name")
+  contactEmail   String?         @map("contact_email")
+  contactPhone   String?         @map("contact_phone")
+  createdAt      DateTime        @default(now()) @map("created_at")
+  updatedAt      DateTime        @default(now()) @map("updated_at")
+  Products       Product[]
+  PurchaseOrders PurchaseOrder[]
+}
+
+model Product {
+  id                   String              @id @default(uuid()) @db.Uuid
+  name                 String
+  description          String?
+  price                Decimal
+  stock                Int
+  supplierId           String?             @map("supplier_id") @db.Uuid
+  createdAt            DateTime            @default(now()) @map("created_at")
+  updatedAt            DateTime            @default(now()) @map("updated_at")
+  supplier             Supplier?           @relation(fields: [supplierId], references: [id])
+  PurchaseOrderItems   PurchaseOrderItem[]
+  SaleItems            SaleItem[]
+}
+
+model PurchaseOrder {
+  id          String               @id @default(uuid()) @db.Uuid
+  supplierId  String               @map("supplier_id") @db.Uuid
+  orderDate   DateTime             @default(now()) @map("order_date")
+  statusId    String               @map("status_id") @db.Uuid
+  createdAt   DateTime             @default(now()) @map("created_at")
+  updatedAt   DateTime             @default(now()) @map("updated_at")
+  supplier    Supplier             @relation(fields: [supplierId], references: [id])
+  status      OrderStatus          @relation(fields: [statusId], references: [id])
+  items       PurchaseOrderItem[]
+}
+
+model PurchaseOrderItem {
+  id              String        @id @default(uuid()) @db.Uuid
+  purchaseOrderId String        @map("purchase_order_id") @db.Uuid
+  productId       String        @map("product_id") @db.Uuid
+  quantity        Int
+  price           Decimal
+  purchaseOrder   PurchaseOrder @relation(fields: [purchaseOrderId], references: [id])
+  product         Product       @relation(fields: [productId], references: [id])
+}
+
+model Sale {
+  id          String       @id @default(uuid()) @db.Uuid
+  employeeId  String       @map("employee_id") @db.Uuid
+  customerId  String       @map("customer_id") @db.Uuid
+  saleDate    DateTime     @default(now()) @map("sale_date")
+  statusId    String       @map("status_id") @db.Uuid
+  createdAt   DateTime     @default(now()) @map("created_at")
+  updatedAt   DateTime     @default(now()) @map("updated_at")
+  employee    Employee     @relation(fields: [employeeId], references: [id])
+  customer    Customer     @relation(fields: [customerId], references: [id])
+  status      OrderStatus  @relation(fields: [statusId], references: [id])
+  items       SaleItem[]
+  payments    Payment[]
+  shipments   Shipment[]
+}
+
+model SaleItem {
+  id        String  @id @default(uuid()) @db.Uuid
+  saleId    String  @map("sale_id") @db.Uuid
+  productId String  @map("product_id") @db.Uuid
+  quantity  Int
+  price     Decimal
+  sale      Sale    @relation(fields: [saleId], references: [id])
+  product   Product @relation(fields: [productId], references: [id])
+}
+
+model Payment {
+  id            String   @id @default(uuid()) @db.Uuid
+  saleId        String   @map("sale_id") @db.Uuid
+  amount        Decimal
+  paymentDate   DateTime @default(now()) @map("payment_date")
+  paymentMethod String   @map("payment_method")
+  status        String
+  createdAt     DateTime @default(now()) @map("created_at")
+  updatedAt     DateTime @default(now()) @map("updated_at")
+  sale          Sale     @relation(fields: [saleId], references: [id])
+}
+
+model Shipment {
+  id             String   @id @default(uuid()) @db.Uuid
+  saleId         String   @map("sale_id") @db.Uuid
+  shipmentDate   DateTime @default(now()) @map("shipment_date")
+  carrier        String?
+  trackingNumber String?  @map("tracking_number")
+  status         String
+  createdAt      DateTime @default(now()) @map("created_at")
+  updatedAt      DateTime @default(now()) @map("updated_at")
+  sale           Sale     @relation(fields: [saleId], references: [id])
+}
