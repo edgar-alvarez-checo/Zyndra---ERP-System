@@ -5,6 +5,11 @@ import { UpdateUserDto} from './dto/update-user.dto';
 
 async function create(data: CreateUserDto) {
 
+    const existingUser = await prisma.user.findUnique({ where: { username: data.username } });
+if (existingUser) {
+  throw new Error('El nombre de usuario ya está en uso');
+}
+
     const hashpassword = bcrypt.hashSync(data.password, 10);
 
     const newUser = await prisma.user.create({

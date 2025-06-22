@@ -8,7 +8,7 @@ async function create(req: express.Request, res: express.Response, next: express
     try {
         const data = await EmployeeValidator.createEmployeeSchema.parseAsync(req.body);
         const newEmployee = await EmployeeService.create(data);
-        return res.status(201).json(newEmployee);
+        return res.status(201);
     }catch (error) {
         next(error);
     }
@@ -19,7 +19,7 @@ async function update(req: express.Request, res: express.Response, next: express
         const id = req.params.id;
         const data = await EmployeeValidator.updateEmployeeSchema.parseAsync(req.body);
         const updateEmployee = await EmployeeService.update(id, data);
-        return res.status(200).json(updateEmployee);
+        return res.status(200).json(updateEmployee.id);
     }catch (error){
         next(error);
     }
@@ -60,7 +60,7 @@ async function remove(req: express.Request, res: express.Response, next: express
     try{
         const id = req.params.id;
         const employee = await EmployeeService.remove(id);
-        return res.status(200).json(employee);
+        return res.status(200);
     }catch (error){
         next(error);
     }

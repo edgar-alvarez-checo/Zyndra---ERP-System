@@ -1,8 +1,8 @@
 import { z } from "zod";
 
 const createUserSchema = z.object({
-    username: z.string().min(5).max(9),
-    password: z.string().min(5).max(9),
+    username: z.string().min(5).max(10),
+    password: z.string().min(5).max(10),
     role: z.string()
     .transform((val) => val.toLowerCase())
     .refine((val) => ["admin", "employee"].includes(val), {
@@ -11,8 +11,8 @@ const createUserSchema = z.object({
 });
 
 const updateUserSchema = z.object({
-    username: z.string().min(5).max(9).optional(),
-    password: z.string().min(5).max(9).optional(),
+    username: z.string().min(5).max(10).optional(),
+    password: z.string().min(5).max(10).optional(),
     role: z
     .string()
     .optional()

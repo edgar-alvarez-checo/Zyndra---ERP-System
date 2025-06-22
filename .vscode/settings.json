@@ -1,0 +1,12 @@
+{
+    "terminal.integrated.suggest.quickSuggestions": {
+
+
+        "commands": "on",
+        "arguments": "on",
+        "unknown": "off"
+    },
+    "terminal.integrated.suggest.suggestOnTriggerCharacters": false,
+    "typescript.suggest.objectLiteralMethodSnippets.enabled": false,
+    "javascript.suggestionActions.enabled": false
+}

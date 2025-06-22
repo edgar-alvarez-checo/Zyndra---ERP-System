@@ -9,7 +9,7 @@ async function create(req: express.Request, res: express.Response, next: express
     const data = await UserValidator.createUserSchema.parseAsync(req.body); 
     data.role = data.role.toLowerCase() as "admin" | "employee";
     const newUser = await UserService.create(data);
-    return res.status(201).json(newUser);
+    return res.status(201);
     } catch (error) {
     next(error);
     }
@@ -25,7 +25,7 @@ async function update(req: express.Request, res: express.Response, next: express
     }
     
     const updateUser = await UserService.update(id, data);
-    return res.status(200).json(updateUser);
+    return res.status(200).json(updateUser.id);
     } catch (error) {
     next(error);
     }
@@ -58,7 +58,9 @@ async function getById(req: express.Request, res: express.Response, next: expres
     const user = await UserService.getById(id);
     return res.status(200).json(user);
     } catch (error) {
-    next(error);
+        
+        next(error);
+        return res.status(404).json({ message: "User not found" });
     }
 };
 
@@ -66,7 +68,7 @@ async function remove(req: express.Request, res: express.Response, next: express
     try {
     const id = req.params.id;
     const deleteUser = await UserService.remove(id);
-    return res.status(200).json(deleteUser);
+    return res.status(200);
     } catch (error) {
     next(error);
     }
